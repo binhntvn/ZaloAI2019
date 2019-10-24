@@ -1,6 +1,6 @@
 import os, sys
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"]="0"  # specify which GPU(s) to be used
+os.environ["CUDA_VISIBLE_DEVICES"]="1"  # specify which GPU(s) to be used
 
 import time
 import functools
@@ -146,6 +146,10 @@ def train():
         start_time = time.time()
         print("Iter: " + str(iteration))
         start = timer()
+        avg_gen_cost = []
+        avg_dis_cost = []
+        avg_w_dist = []
+
         #---------------------TRAIN G------------------------
         for p in aD.parameters():
             p.requires_grad_(False)  # freeze D
@@ -164,7 +168,9 @@ def train():
             gen_cost.backward(mone)
             gen_cost = -gen_cost
         
-        optimizer_g.step()
+            optimizer_g.step()
+            avg_gen_cost.append(gen_cost.cpu().data.numpy())
+
         end = timer()
         print('---train G elapsed time: {}'.format(end - start))
         #---------------------TRAIN D------------------------
@@ -210,6 +216,10 @@ def train():
             disc_cost.backward()
             w_dist = disc_fake  - disc_real
             optimizer_d.step()
+
+            avg_dis_cost.append(disc_cost.cpu().data.numpy())
+            avg_w_dist.append(w_dist.cpu().data.numpy())
+            
             #------------------VISUALIZATION----------
             if i == CONFIG.CRITIC_ITERS-1:
                 writer.add_scalar('data/disc_cost', disc_cost, iteration)
@@ -237,10 +247,10 @@ def train():
         writer.add_scalar('data/gen_cost', gen_cost, iteration)
 
         lib.plot.plot(os.path.join(CONFIG.OUTPUT_PATH, 'time'), time.time() - start_time)
-        lib.plot.plot(os.path.join(CONFIG.OUTPUT_PATH, 'train_disc_cost'), disc_cost.cpu().data.numpy())
-        lib.plot.plot(os.path.join(CONFIG.OUTPUT_PATH, 'train_gen_cost'), gen_cost.cpu().data.numpy())
-        lib.plot.plot(os.path.join(CONFIG.OUTPUT_PATH, 'wasserstein_distance'), w_dist.cpu().data.numpy())
-        if iteration % 100 == 99:
+        lib.plot.plot(os.path.join(CONFIG.OUTPUT_PATH, 'train_disc_cost'), np.mean(np.array(avg_dis_cost)))
+        lib.plot.plot(os.path.join(CONFIG.OUTPUT_PATH, 'train_gen_cost'), np.mean(np.array(avg_gen_cost)))
+        lib.plot.plot(os.path.join(CONFIG.OUTPUT_PATH, 'wasserstein_distance'), np.mean(np.array(avg_w_dist)))
+        if iteration % 200 == 199:
             val_loader = load_data(CONFIG.VAL_DATA_DIR)
             dev_disc_costs = []
             for _, images in enumerate(val_loader):
