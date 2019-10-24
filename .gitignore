@@ -5,3 +5,4 @@ libs/__pycache__
 runs
 checkpoints
 log.pkl
+generated_images
