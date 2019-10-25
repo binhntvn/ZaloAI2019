@@ -3,9 +3,9 @@ import os
 import random
 
 random.seed(123)
-Train_ratio = 0.9 # 90% images will be in Training set
+Train_ratio = 0.95 # 90% images will be in Training set
 
-All_img_dir = '../training_dataset/training_data/motobike_png'
+All_img_dir = '../training_dataset/cut_images/'
 Trn_img_dir = '../training_dataset/trainingset/motobike_png'
 Val_img_dir = '../training_dataset/validationset/motobike_png'
 
