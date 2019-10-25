@@ -1,6 +1,6 @@
 import os, sys
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"]="0"  # specify which GPU(s) to be used
+os.environ["CUDA_VISIBLE_DEVICES"]="1"  # specify which GPU(s) to be used
 
 import numpy as np
 
@@ -28,10 +28,10 @@ cuda_available = torch.cuda.is_available()
 device = torch.device("cuda" if cuda_available else "cpu")
 print('Run on device = ', device)
 
-PATH_TO_CKPT = 'checkpoints_20191024/generator.pt'
-NUM_IMAGES = 2048
+PATH_TO_CKPT = 'checkpoints/generator.pt'
+NUM_IMAGES = 10000
 BATCH_SIZE = 32
-GEN_DIR = 'generated_images'
+GEN_DIR = 'generated_10kimages'
 
 if os.path.exists(GEN_DIR):
     rmtree(GEN_DIR)
@@ -49,9 +49,9 @@ def generate_image(netG, noise=None):
         noise = gen_rand_noise()
 
     with torch.no_grad():
-    	noisev = noise 
+        noisev = noise 
     samples = netG(noisev)
-    samples = samples.view(BATCH_SIZE, 3, CONFIG.DIM, CONFIG.DIM)
+    samples = samples.view(BATCH_SIZE, 3, CONFIG.IMAGE_SIZE, CONFIG.IMAGE_SIZE)
     samples = samples * 0.5 + 0.5
     return samples
 
@@ -59,5 +59,6 @@ aG = torch.load(PATH_TO_CKPT)
 
 for i in range(int(math.ceil(NUM_IMAGES/BATCH_SIZE))):
     gen_images = generate_image(aG)
-    torchvision.utils.save_image(gen_images,
-                                os.path.join(GEN_DIR, 'samples_{}.png'.format(i)), nrow=8, padding=2)
+    for j in range(BATCH_SIZE):
+        torchvision.utils.save_image(gen_images[j, :, :, :], os.path.join(GEN_DIR, '{}.png'.format(i * BATCH_SIZE + j)))
+
