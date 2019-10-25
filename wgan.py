@@ -200,7 +200,7 @@ class GoodGenerator(nn.Module):
         return output
 
 class GoodDiscriminator(nn.Module):
-    def __init__(self, dim=CONFIG.DIM):
+    def __init__(self, dim=CONFIG.DIM): # In case of DIM = IMAGE_SIZE
         super(GoodDiscriminator, self).__init__()
 
         self.dim = dim
@@ -214,7 +214,7 @@ class GoodDiscriminator(nn.Module):
 
     def forward(self, x):
         output = x.contiguous()
-        output = output.view(-1, 3, CONFIG.DIM, CONFIG.DIM)
+        output = output.view(-1, 3, CONFIG.IMAGE_SIZE, CONFIG.IMAGE_SIZE)
         output = self.conv1(output)
         output = self.rb1(output)
         output = self.rb2(output)

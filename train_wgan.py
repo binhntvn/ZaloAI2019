@@ -116,7 +116,7 @@ if CONFIG.RESTORE_MODE:
     aD = torch.load(os.path.join(CONFIG.OUTPUT_PATH, "discriminator.pt"))
 else:
     aG = GoodGenerator(CONFIG.DIM, CONFIG.OUTPUT_DIM)
-    aD = GoodDiscriminator(CONFIG.DIM)
+    aD = GoodDiscriminator(CONFIG.IMAGE_SIZE)
     
     aG.apply(weights_init)
     aD.apply(weights_init)
@@ -251,7 +251,7 @@ def train():
         lib.plot.plot(os.path.join(CONFIG.OUTPUT_PATH, 'train_disc_cost'), np.mean(np.array(avg_dis_cost)))
         lib.plot.plot(os.path.join(CONFIG.OUTPUT_PATH, 'train_gen_cost'), np.mean(np.array(avg_gen_cost)))
         lib.plot.plot(os.path.join(CONFIG.OUTPUT_PATH, 'wasserstein_distance'), np.mean(np.array(avg_w_dist)))
-        if iteration % 10 == 9:
+        if iteration % 200 == 199:
             val_loader = load_data(CONFIG.VAL_DATA_DIR)
             dev_disc_costs = []
             for _, images in enumerate(val_loader):

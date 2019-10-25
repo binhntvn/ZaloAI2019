@@ -12,7 +12,7 @@ START_ITER = 0 # starting iteration
 OUTPUT_PATH = 'checkpoints' # output path where result (.e.g drawing images, cost, chart) will be stored
 CRITIC_ITERS = 5 # How many iterations to train the critic for
 GENER_ITERS = 1
-BATCH_SIZE = 8# Batch size. Must be a multiple of N_GPUS
+BATCH_SIZE = 4# Batch size. Must be a multiple of N_GPUS
 END_ITER = 100000 # How many iterations to train for
 LAMBDA = 10 # Gradient penalty lambda hyperparameter
 
