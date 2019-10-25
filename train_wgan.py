@@ -1,6 +1,6 @@
 import os, sys
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"]="1"  # specify which GPU(s) to be used
+os.environ["CUDA_VISIBLE_DEVICES"]="0"  # specify which GPU(s) to be used
 
 import time
 import functools
@@ -54,8 +54,8 @@ def weights_init(m):
 
 def load_data(path_to_folder):
     data_transform = transforms.Compose([
-                 transforms.Resize(CONFIG.DIM + 32, interpolation=Image.BICUBIC), # Possible values are: Image.NEAREST, Image.BILINEAR, Image.BICUBIC and Image.ANTIALIAS
-                 transforms.CenterCrop(CONFIG.DIM),
+                 transforms.Resize((CONFIG.IMAGE_SIZE, CONFIG.IMAGE_SIZE), interpolation=Image.BICUBIC), # Possible values are: Image.NEAREST, Image.BILINEAR, Image.BICUBIC and Image.ANTIALIAS
+                #  transforms.CenterCrop(CONFIG.IMAGE_SIZE),
                  transforms.RandomHorizontalFlip(),
                  transforms.ToTensor(),
                  transforms.Normalize(mean=[0.5, 0.5, 0.5],std=[0.5, 0.5, 0.5])
@@ -69,10 +69,10 @@ def load_data(path_to_folder):
 def calc_gradient_penalty(netD, real_data, fake_data):
     alpha = torch.rand(CONFIG.BATCH_SIZE, 1)
     alpha = alpha.expand(CONFIG.BATCH_SIZE, int(real_data.nelement()/CONFIG.BATCH_SIZE)).contiguous()
-    alpha = alpha.view(CONFIG.BATCH_SIZE, 3, CONFIG.DIM, CONFIG.DIM)
+    alpha = alpha.view(CONFIG.BATCH_SIZE, 3, CONFIG.IMAGE_SIZE, CONFIG.IMAGE_SIZE)
     alpha = alpha.to(device)
     
-    fake_data = fake_data.view(CONFIG.BATCH_SIZE, 3, CONFIG.DIM, CONFIG.DIM)
+    fake_data = fake_data.view(CONFIG.BATCH_SIZE, 3, CONFIG.IMAGE_SIZE, CONFIG.IMAGE_SIZE)
     interpolates = alpha * real_data.detach() + ((1 - alpha) * fake_data.detach())
 
     interpolates = interpolates.to(device)
@@ -103,7 +103,7 @@ def generate_image(netG, noise=None):
     with torch.no_grad():
     	noisev = noise 
     samples = netG(noisev)
-    samples = samples.view(CONFIG.BATCH_SIZE, 3, CONFIG.DIM, CONFIG.DIM)
+    samples = samples.view(CONFIG.BATCH_SIZE, 3, CONFIG.IMAGE_SIZE, CONFIG.IMAGE_SIZE)
     samples = samples * 0.5 + 0.5
     return samples
 
@@ -195,6 +195,7 @@ def train():
                 batch = dataiter.next()
             batch = batch[0] #batch[1] contains labels
             real_data = batch.to(device) #TODO: modify load_data for each loading
+
             end = timer(); print('---load real imgs elapsed time: {}'.format(end-start))
             start = timer()
 
@@ -250,7 +251,7 @@ def train():
         lib.plot.plot(os.path.join(CONFIG.OUTPUT_PATH, 'train_disc_cost'), np.mean(np.array(avg_dis_cost)))
         lib.plot.plot(os.path.join(CONFIG.OUTPUT_PATH, 'train_gen_cost'), np.mean(np.array(avg_gen_cost)))
         lib.plot.plot(os.path.join(CONFIG.OUTPUT_PATH, 'wasserstein_distance'), np.mean(np.array(avg_w_dist)))
-        if iteration % 200 == 199:
+        if iteration % 10 == 9:
             val_loader = load_data(CONFIG.VAL_DATA_DIR)
             dev_disc_costs = []
             for _, images in enumerate(val_loader):
