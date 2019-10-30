@@ -1,6 +1,6 @@
 import os, sys
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"]="0"  # specify which GPU(s) to be used
+os.environ["CUDA_VISIBLE_DEVICES"]="1"  # specify which GPU(s) to be used
 
 import time
 import functools
@@ -112,8 +112,8 @@ fixed_noise = gen_rand_noise()
 
 
 if CONFIG.RESTORE_MODE:
-    aG = torch.load(os.path.join(CONFIG.OUTPUT_PATH, "generator.pt"))
-    aD = torch.load(os.path.join(CONFIG.OUTPUT_PATH, "discriminator.pt"))
+    aG = torch.load(os.path.join(CONFIG.OUTPUT_PATH, "generator_{}.pt".format(CONFIG.START_ITER)))
+    aD = torch.load(os.path.join(CONFIG.OUTPUT_PATH, "discriminator_{}.pt".format(CONFIG.START_ITER)))
 else:
     aG = GoodGenerator(CONFIG.DIM, CONFIG.OUTPUT_DIM)
     aD = GoodDiscriminator(CONFIG.IMAGE_SIZE)
@@ -261,7 +261,7 @@ def train():
             	    imgs_v = imgs
 
                 D = aD(imgs_v)
-                _dev_disc_cost = -D.mean().cpu().data.numpy()
+                _dev_disc_cost = D.mean().cpu().data.numpy()
                 dev_disc_costs.append(_dev_disc_cost)
             lib.plot.plot(os.path.join(CONFIG.OUTPUT_PATH, 'dev_disc_cost'), np.mean(dev_disc_costs))
             lib.plot.flush()	
@@ -270,8 +270,8 @@ def train():
             grid_images = torchvision.utils.make_grid(gen_images, nrow=8, padding=2)
             writer.add_image('images', grid_images, iteration)
 	#----------------------Save model----------------------
-            torch.save(aG, os.path.join(CONFIG.OUTPUT_PATH, "generator.pt"))
-            torch.save(aD, os.path.join(CONFIG.OUTPUT_PATH, "discriminator.pt"))
+            torch.save(aG, os.path.join(CONFIG.OUTPUT_PATH, "generator_{}.pt".format(iteration)))
+            torch.save(aD, os.path.join(CONFIG.OUTPUT_PATH, "discriminator_{}.pt".format(iteration)))
         lib.plot.tick()
 
 train()

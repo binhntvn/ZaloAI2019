@@ -5,9 +5,9 @@ import random
 random.seed(123)
 Train_ratio = 0.95 # 90% images will be in Training set
 
-All_img_dir = '../training_dataset/cut_images/'
-Trn_img_dir = '../training_dataset/trainingset/motobike_png'
-Val_img_dir = '../training_dataset/validationset/motobike_png'
+All_img_dir = '/media/HDD/SangTV/Zalo_AI_challenge/training_dataset/cut_images/'
+Trn_img_dir = '/media/HDD/SangTV/Zalo_AI_challenge/training_dataset/trainingset/motobike_png'
+Val_img_dir = '/media/HDD/SangTV/Zalo_AI_challenge/training_dataset/validationset/motobike_png'
 
 def reset_dir(dir_path):
     if os.path.exists(dir_path):
