@@ -7,10 +7,10 @@ TRN_DATA_DIR = '/media/HDD/SangTV/Zalo_AI_challenge/training_dataset/trainingset
 VAL_DATA_DIR = '/media/HDD/SangTV/Zalo_AI_challenge/training_dataset/validationset'
 
 NOISE_DIM = 128
-RESTORE_MODE = True # if True, it will load saved model from OUT_PATH and continue to train
-START_ITER = 7599 # starting iteration 
+RESTORE_MODE = False # if True, it will load saved model from OUT_PATH and continue to train
+START_ITER = 0 # starting iteration 
 OUTPUT_PATH = 'checkpoints' # output path where result (.e.g drawing images, cost, chart) will be stored
-CRITIC_ITERS = 5 # How many iterations to train the critic for
+CRITIC_ITERS = 2 # How many iterations to train the critic for
 GENER_ITERS = 1
 BATCH_SIZE = 4# Batch size. Must be a multiple of N_GPUS
 END_ITER = 100000 # How many iterations to train for

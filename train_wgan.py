@@ -1,6 +1,6 @@
 import os, sys
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"]="1"  # specify which GPU(s) to be used
+os.environ["CUDA_VISIBLE_DEVICES"]="0"  # specify which GPU(s) to be used
 
 import time
 import functools
@@ -54,9 +54,10 @@ def weights_init(m):
 
 def load_data(path_to_folder):
     data_transform = transforms.Compose([
-                 transforms.Resize((CONFIG.IMAGE_SIZE, CONFIG.IMAGE_SIZE), interpolation=Image.BICUBIC), # Possible values are: Image.NEAREST, Image.BILINEAR, Image.BICUBIC and Image.ANTIALIAS
+                 #transforms.Resize((CONFIG.IMAGE_SIZE, CONFIG.IMAGE_SIZE), interpolation=Image.BICUBIC), # Possible values are: Image.NEAREST, Image.BILINEAR, Image.BICUBIC and Image.ANTIALIAS
                 #  transforms.CenterCrop(CONFIG.IMAGE_SIZE),
                  transforms.RandomHorizontalFlip(),
+                 transforms.ColorJitter(),
                  transforms.ToTensor(),
                  transforms.Normalize(mean=[0.5, 0.5, 0.5],std=[0.5, 0.5, 0.5])
                 ])

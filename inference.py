@@ -29,13 +29,13 @@ cuda_available = torch.cuda.is_available()
 device = torch.device("cuda" if cuda_available else "cpu")
 print('Run on device = ', device)
 
-PATH_TO_GEN_CKPT = 'checkpoints_gaussian/generator_31799.pt'
+PATH_TO_GEN_CKPT = 'checkpoints_1101/generator_14399.pt'
 NUM_IMAGES = 10000
 BATCH_SIZE = 16
 TOLERATE_TH = 1 # Critic of ganerated image must be larger than mean on real + the tolerate thresholh
 GEN_DIR = 'generated_10kimages'
 PATH_TO_NOISE_VEC = 'noise.npy'
-SCORE_TH = 0.95
+SCORE_TH = 0#0.95
 
 Extractor = GetClassifyScore()
 
