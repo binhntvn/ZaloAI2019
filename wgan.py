@@ -173,8 +173,9 @@ class GoodGenerator(nn.Module):
 
         self.dim = dim
 
-        self.ln1 = nn.Linear(CONFIG.NOISE_DIM, 8*8*8*self.dim) # initial shape is wxhxdepth = 8x8x(8*DIM)
-        self.rb1 = ResidualBlock(8*self.dim, 8*self.dim, 3, resample = 'up')
+        self.ln1 = nn.Linear(CONFIG.NOISE_DIM, 4*4*32*self.dim) # initial shape is wxhxdepth = 8x8x(8*DIM)
+        self.rb0 = ResidualBlock(32*self.dim, 16*self.dim, 3, resample = 'up')
+        self.rb1 = ResidualBlock(16*self.dim, 8*self.dim, 3, resample = 'up')
         self.rb2 = ResidualBlock(8*self.dim, 4*self.dim, 3, resample = 'up')
         self.rb3 = ResidualBlock(4*self.dim, 2*self.dim, 3, resample = 'up')
         self.rb4 = ResidualBlock(2*self.dim, 1*self.dim, 3, resample = 'up')
@@ -186,7 +187,8 @@ class GoodGenerator(nn.Module):
 
     def forward(self, x):
         output = self.ln1(x.contiguous())
-        output = output.view(-1, 8*self.dim, 8, 8)
+        output = output.view(-1, 32*self.dim, 4, 4)
+        output = self.rb0(output)
         output = self.rb1(output)
         output = self.rb2(output)
         output = self.rb3(output)
